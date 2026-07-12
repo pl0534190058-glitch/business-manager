@@ -186,3 +186,35 @@ main { padding: 1.5rem; max-width: 1100px; margin: 0 auto; }
 
 .edit-btn { background: #f59e0b; color: white; }
 .delete-btn { background: #ef4444; color: white; }
+
+.task-row { cursor: pointer; }
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal[hidden] { display: none; }
+
+.modal-content {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  max-width: 500px;
+  width: 90%;
+  white-space: pre-wrap;
+}
+
+.modal-content button {
+  margin-top: 1rem;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background: #2563eb;
+  color: white;
+}

@@ -254,7 +254,7 @@ async function loadTasks() {
     .map((t) => {
       const assigned = employeesCache.find((u) => u.id === t.assigned_user_id);
       const client = clientsCache.find((c) => c.id === t.client_id);
-      return `<tr>
+      return `<tr class="task-row" onclick="showTaskDescription(${t.id})">
         <td>${escapeHtml(t.title)}</td>
         <td>${escapeHtml(t.domain || '')}</td>
         <td>${escapeHtml(assigned ? assigned.full_name : '—')}</td>
@@ -262,8 +262,8 @@ async function loadTasks() {
         <td>${STATUS_LABELS[t.status] || t.status}</td>
         <td>${escapeHtml(t.due_date || '')}</td>
         <td>
-          <button class="edit-btn" onclick="editTask(${t.id})">ערוך</button>
-          <button class="delete-btn manager-only" onclick="deleteTask(${t.id})">מחק</button>
+          <button class="edit-btn" onclick="event.stopPropagation(); editTask(${t.id})">ערוך</button>
+          <button class="delete-btn manager-only" onclick="event.stopPropagation(); deleteTask(${t.id})">מחק</button>
         </td>
       </tr>`;
     })
@@ -319,6 +319,18 @@ function editTask(id) {
   document.getElementById('task-status').value = t.status;
   document.getElementById('task-due').value = t.due_date || '';
 }
+
+function showTaskDescription(id) {
+  const t = tasksCache.find((x) => x.id === id);
+  if (!t) return;
+  document.getElementById('task-desc-title').textContent = t.title;
+  document.getElementById('task-desc-body').textContent = t.description || 'אין תיאור';
+  document.getElementById('task-desc-modal').hidden = false;
+}
+
+document.getElementById('task-desc-close').addEventListener('click', () => {
+  document.getElementById('task-desc-modal').hidden = true;
+});
 
 async function deleteTask(id) {
   if (!confirm('למחוק משימה זו?')) return;

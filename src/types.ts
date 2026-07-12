@@ -54,6 +54,16 @@ export interface Tab {
   visible: number;
 }
 
+export interface ApiKey {
+  id: number;
+  user_id: number;
+  key_hash: string;
+  key_prefix: string;
+  label: string | null;
+  created_at: string;
+  last_used_at: string | null;
+}
+
 declare global {
   namespace Express {
     interface Request {

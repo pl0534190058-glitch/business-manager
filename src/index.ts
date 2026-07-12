@@ -9,6 +9,7 @@ import clientRoutes from './routes/clients';
 import activityRoutes from './routes/activity';
 import dashboardRoutes from './routes/dashboard';
 import tabRoutes from './routes/tabs';
+import apiKeyRoutes from './routes/apiKeys';
 import { requireAuth } from './auth/middleware';
 
 const app = express();
@@ -25,6 +26,7 @@ app.use('/api/clients', requireAuth, clientRoutes);
 app.use('/api/activity', requireAuth, activityRoutes);
 app.use('/api/dashboard', requireAuth, dashboardRoutes);
 app.use('/api/tabs', requireAuth, tabRoutes);
+app.use('/api/api-keys', requireAuth, apiKeyRoutes);
 
 app.listen(PORT, () => {
   console.log(`השרת פועל על פורט ${PORT}`);

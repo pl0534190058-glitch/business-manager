@@ -55,6 +55,16 @@ db.exec(`
     sort_order INTEGER NOT NULL,
     visible INTEGER NOT NULL DEFAULT 1
   );
+
+  CREATE TABLE IF NOT EXISTS api_keys (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    key_hash TEXT UNIQUE NOT NULL,
+    key_prefix TEXT NOT NULL,
+    label TEXT,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    last_used_at TEXT
+  );
 `);
 
 const tabCount = db.prepare('SELECT COUNT(*) as c FROM tabs').get() as { c: number };
