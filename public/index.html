@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ניהול עסק</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="login-screen" class="screen">
+  <form id="login-form" class="login-box">
+    <h1>כניסה למערכת</h1>
+    <label>שם משתמש</label>
+    <input type="text" id="login-username" required autocomplete="username">
+    <label>סיסמה</label>
+    <input type="password" id="login-password" required autocomplete="current-password">
+    <button type="submit">התחבר</button>
+    <p id="login-error" class="error"></p>
+  </form>
+</div>
+
+<div id="app-screen" class="screen" hidden>
+  <header>
+    <h1>ניהול עסק</h1>
+    <div class="user-info">
+      <span id="current-user-label"></span>
+      <a href="/api-docs.html" target="_blank" id="api-docs-link">API</a>
+      <button id="logout-btn">התנתקות</button>
+    </div>
+  </header>
+
+  <nav id="tabs-nav"></nav>
+
+  <main>
+    <section id="tab-dashboard" class="tab-panel">
+      <h2>דשבורד</h2>
+      <div class="stat-cards">
+        <div class="stat-card" data-goto="tasks"><span id="stat-open-tasks">–</span><label>משימות פתוחות</label></div>
+        <div class="stat-card" data-goto="clients"><span id="stat-clients">–</span><label>לקוחות</label></div>
+        <div class="stat-card" data-goto="employees"><span id="stat-employees">–</span><label>עובדים פעילים</label></div>
+      </div>
+    </section>
+
+    <section id="tab-employees" class="tab-panel">
+      <h2>עובדים</h2>
+      <form id="employee-form" class="entity-form manager-only">
+        <input type="hidden" id="employee-id">
+        <input type="text" id="employee-username" placeholder="שם משתמש" required>
+        <input type="password" id="employee-password" placeholder="סיסמה (השאר ריק כדי לא לשנות)">
+        <input type="text" id="employee-fullname" placeholder="שם מלא" required>
+        <input type="text" id="employee-type" placeholder="סוג עובד (לדוגמה: מכירות)">
+        <select id="employee-role">
+          <option value="employee">עובד</option>
+          <option value="manager">מנהל</option>
+        </select>
+        <button type="submit">שמור עובד</button>
+        <button type="button" id="employee-cancel">ביטול</button>
+      </form>
+      <input type="search" id="employees-search" class="quick-search" placeholder="חיפוש מהיר...">
+      <table class="data-table">
+        <thead><tr><th>שם מלא</th><th>שם משתמש</th><th>תפקיד</th><th>סוג</th><th>פעיל</th><th class="manager-only">פעולות</th></tr></thead>
+        <tbody id="employees-table-body"></tbody>
+      </table>
+    </section>
+
+    <section id="tab-tasks" class="tab-panel">
+      <h2>משימות</h2>
+      <form id="task-form" class="entity-form">
+        <input type="hidden" id="task-id">
+        <input type="text" id="task-title" placeholder="כותרת המשימה" required>
+        <input type="text" id="task-description" placeholder="תיאור">
+        <input type="text" id="task-domain" placeholder="תחום">
+        <select id="task-assigned"></select>
+        <select id="task-client"></select>
+        <select id="task-status">
+          <option value="open">פתוחה</option>
+          <option value="in_progress">בטיפול</option>
+          <option value="done">הושלמה</option>
+        </select>
+        <input type="date" id="task-due">
+        <button type="submit">שמור משימה</button>
+        <button type="button" id="task-cancel">ביטול</button>
+      </form>
+      <input type="search" id="tasks-search" class="quick-search" placeholder="חיפוש מהיר...">
+      <table class="data-table">
+        <thead><tr><th>כותרת</th><th>תחום</th><th>משויך ל</th><th>לקוח</th><th>סטטוס</th><th>יעד</th><th>פעולות</th></tr></thead>
+        <tbody id="tasks-table-body"></tbody>
+      </table>
+    </section>
+
+    <section id="tab-clients" class="tab-panel">
+      <h2>לקוחות</h2>
+      <form id="client-form" class="entity-form">
+        <input type="hidden" id="client-id">
+        <input type="text" id="client-name" placeholder="שם הלקוח" required>
+        <input type="text" id="client-contact" placeholder="פרטי קשר">
+        <select id="client-assigned"></select>
+        <input type="text" id="client-notes" placeholder="הערות">
+        <button type="submit">שמור לקוח</button>
+        <button type="button" id="client-cancel">ביטול</button>
+      </form>
+      <input type="search" id="clients-search" class="quick-search" placeholder="חיפוש מהיר...">
+      <table class="data-table">
+        <thead><tr><th>שם</th><th>קשר</th><th>גורם מטפל</th><th>הערות</th><th>פעולות</th></tr></thead>
+        <tbody id="clients-table-body"></tbody>
+      </table>
+    </section>
+
+    <section id="tab-activity" class="tab-panel">
+      <h2>פעילות</h2>
+      <input type="search" id="activity-search" class="quick-search" placeholder="חיפוש מהיר...">
+      <table class="data-table">
+        <thead><tr><th>תאריך</th><th>מבצע</th><th>פעולה</th><th>תיאור</th></tr></thead>
+        <tbody id="activity-table-body"></tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

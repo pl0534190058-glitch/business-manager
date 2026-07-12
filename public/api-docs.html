@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API - ניהול עסק</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  body { padding: 1.5rem; max-width: 900px; margin: 0 auto; }
+  h1 { color: #1f2937; }
+  .note {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+  }
+  table.endpoints { width: 100%; border-collapse: collapse; margin-bottom: 2rem; background: white; }
+  table.endpoints th, table.endpoints td {
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem 0.7rem;
+    text-align: right;
+    font-size: 0.9rem;
+  }
+  table.endpoints th { background: #f9fafb; }
+  table.endpoints tr.pickable { cursor: pointer; }
+  table.endpoints tr.pickable:hover { background: #eff6ff; }
+  code { background: #f3f4f6; padding: 0.1rem 0.4rem; border-radius: 4px; }
+  .tester {
+    background: white;
+    border-radius: 8px;
+    padding: 1.2rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .tester label { display: block; margin-top: 0.7rem; font-weight: bold; }
+  .tester select, .tester input, .tester textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.3rem;
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
+  .tester textarea { min-height: 100px; font-family: monospace; direction: ltr; text-align: left; }
+  .tester button {
+    margin-top: 1rem;
+    padding: 0.5rem 1.2rem;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  #response {
+    margin-top: 1rem;
+    background: #111827;
+    color: #d1fae5;
+    padding: 1rem;
+    border-radius: 6px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: monospace;
+    direction: ltr;
+    text-align: left;
+    min-height: 2rem;
+  }
+</style>
+</head>
+<body>
+
+<h1>API של המערכת</h1>
+
+<div class="note">
+  כדי שהבקשות יעבדו צריך להיות מחובר/ת באותו דפדפן — אם עדיין לא התחברת,
+  <a href="/index.html">היכנס/י כאן</a> קודם, ואז חזרי לעמוד הזה (אפשר להשאיר את שתי הכרטיסיות פתוחות).
+  הבדיקה כאן שולחת בקשות אמיתיות שמשנות נתונים במערכת.
+</div>
+
+<h2>רשימת הפעולות (Endpoints)</h2>
+<table class="endpoints" id="endpoints-table">
+  <thead>
+    <tr><th>פעולה</th><th>נתיב</th><th>הרשאה</th><th>Body לדוגמה</th></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<h2>ניסוי ישיר</h2>
+<div class="tester">
+  <label>בחר פעולה מהרשימה למעלה, או מלא ידנית:</label>
+  <label>Method</label>
+  <select id="method">
+    <option>GET</option>
+    <option>POST</option>
+    <option>PUT</option>
+    <option>DELETE</option>
+  </select>
+  <label>נתיב (path)</label>
+  <input id="path" value="/api/employees">
+  <label>Body (JSON, רק ל-POST/PUT)</label>
+  <textarea id="body"></textarea>
+  <button id="send-btn">שלח בקשה</button>
+  <div id="response"></div>
+</div>
+
+<script>
+const ENDPOINTS = [
+  { method: 'POST', path: '/api/auth/login', auth: 'ללא', body: { username: 'admin', password: 'admin123' } },
+  { method: 'POST', path: '/api/auth/logout', auth: 'מחובר', body: null },
+  { method: 'GET', path: '/api/auth/me', auth: 'מחובר', body: null },
+
+  { method: 'GET', path: '/api/employees', auth: 'מחובר', body: null },
+  { method: 'POST', path: '/api/employees', auth: 'מנהל', body: { username: 'yossi', password: 'pass123', full_name: 'יוסי לוי', role: 'employee', employee_type: 'תמיכה' } },
+  { method: 'PUT', path: '/api/employees/1', auth: 'מנהל', body: { full_name: 'שם מעודכן' } },
+  { method: 'DELETE', path: '/api/employees/1', auth: 'מנהל', body: null },
+
+  { method: 'GET', path: '/api/tasks', auth: 'מחובר', body: null },
+  { method: 'POST', path: '/api/tasks', auth: 'מחובר', body: { title: 'משימה חדשה', domain: 'כללי', assigned_user_id: null, client_id: null, status: 'open', due_date: null } },
+  { method: 'PUT', path: '/api/tasks/1', auth: 'בעלים/מנהל', body: { status: 'done' } },
+  { method: 'DELETE', path: '/api/tasks/1', auth: 'מנהל', body: null },
+
+  { method: 'GET', path: '/api/clients', auth: 'מחובר', body: null },
+  { method: 'POST', path: '/api/clients', auth: 'מחובר', body: { name: 'לקוח חדש', contact_info: '050-0000000', assigned_user_id: null, notes: '' } },
+  { method: 'PUT', path: '/api/clients/1', auth: 'בעלים/מנהל', body: { notes: 'הערה מעודכנת' } },
+  { method: 'DELETE', path: '/api/clients/1', auth: 'מנהל', body: null },
+
+  { method: 'GET', path: '/api/activity', auth: 'מחובר', body: null },
+  { method: 'GET', path: '/api/dashboard/summary', auth: 'מחובר', body: null },
+  { method: 'GET', path: '/api/tabs', auth: 'מחובר', body: null },
+  { method: 'PUT', path: '/api/tabs/1', auth: 'מנהל', body: { label: 'דשבורד', sort_order: 1, visible: true } },
+];
+
+const tbody = document.querySelector('#endpoints-table tbody');
+ENDPOINTS.forEach((ep, i) => {
+  const tr = document.createElement('tr');
+  tr.className = 'pickable';
+  tr.innerHTML = `<td>${ep.method}</td><td><code>${ep.path}</code></td><td>${ep.auth}</td><td><code>${ep.body ? JSON.stringify(ep.body) : '—'}</code></td>`;
+  tr.addEventListener('click', () => {
+    document.getElementById('method').value = ep.method;
+    document.getElementById('path').value = ep.path;
+    document.getElementById('body').value = ep.body ? JSON.stringify(ep.body, null, 2) : '';
+  });
+  tbody.appendChild(tr);
+});
+
+document.getElementById('send-btn').addEventListener('click', async () => {
+  const method = document.getElementById('method').value;
+  const path = document.getElementById('path').value;
+  const bodyText = document.getElementById('body').value.trim();
+  const responseEl = document.getElementById('response');
+  responseEl.textContent = 'שולח...';
+
+  try {
+    const options = { method, headers: { 'Content-Type': 'application/json' } };
+    if (method !== 'GET' && method !== 'DELETE' && bodyText) {
+      options.body = bodyText;
+    }
+    const res = await fetch(path, options);
+    const text = await res.text();
+    let pretty = text;
+    try { pretty = JSON.stringify(JSON.parse(text), null, 2); } catch {}
+    responseEl.textContent = `סטטוס: ${res.status}\n\n${pretty}`;
+  } catch (err) {
+    responseEl.textContent = 'שגיאה: ' + err.message;
+  }
+});
+</script>
+
+</body>
+</html>
